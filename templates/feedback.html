@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .star {
+            font-size: 40px;
+            color: #ddd;
+            cursor: pointer;
+            transition: transform 0.2s, color 0.2s;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .star.active {
+            color: #ffd700;
+        }
+
+        .rating-label {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .link-to-dashboard {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .link-to-dashboard a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .link-to-dashboard a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Share Your Feedback</h1>
+        <p class="subtitle">We value your opinion! Please rate your experience.</p>
+        
+        <div id="message" class="message"></div>
+        
+        <form id="feedbackForm">
+            <div class="form-group">
+                <label for="name">Name (Optional)</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email (Optional)</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email">
+            </div>
+
+            <div class="form-group">
+                <label>Rating</label>
+                <div class="star-rating">
+                    <span class="star" data-rating="1">★</span>
+                    <span class="star" data-rating="2">★</span>
+                    <span class="star" data-rating="3">★</span>
+                    <span class="star" data-rating="4">★</span>
+                    <span class="star" data-rating="5">★</span>
+                </div>
+                <div class="rating-label" id="ratingLabel">Select a rating</div>
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Comments (Optional)</label>
+                <textarea id="comment" name="comment" placeholder="Share your thoughts..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Feedback</button>
+        </form>
+
+        <div class="link-to-dashboard">
+            <a href="/dashboard">View Dashboard →</a>
+        </div>
+    </div>
+
+    <script>
+        let selectedRating = 0;
+
+        // Star rating interaction
+        const stars = document.querySelectorAll('.star');
+        const ratingLabel = document.getElementById('ratingLabel');
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.rating);
+                updateStars(selectedRating);
+            });
+
+            star.addEventListener('mouseenter', function() {
+                const rating = parseInt(this.dataset.rating);
+                updateStars(rating);
+            });
+        });
+
+        document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+            updateStars(selectedRating);
+        });
+
+        function updateStars(rating) {
+            const labels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+            ratingLabel.textContent = rating > 0 ? labels[rating] : 'Select a rating';
+            
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Form submission
+        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (selectedRating === 0) {
+                showMessage('Please select a rating', 'error');
+                return;
+            }
+
+            const formData = {
+                rating: selectedRating,
+                comment: document.getElementById('comment').value,
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value
+            };
+
+            try {
+                const response = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage('Thank you for your feedback!', 'success');
+                    document.getElementById('feedbackForm').reset();
+                    selectedRating = 0;
+                    updateStars(0);
+                } else {
+                    showMessage(data.error || 'Failed to submit feedback', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+            }
+        });
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
+
