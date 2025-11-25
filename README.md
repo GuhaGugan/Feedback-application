@@ -1,7 +1,7 @@
 # Feedback Application
 
 A web application for collecting user feedback with QR code and link access, featuring a dashboard that consolidates and displays feedback categorized by rating (positive, negative, medium).
-CI/CD test gugan
+CI/CD test gugan Testing CI/CD pipeline
 ## Features
 
 - 📝 User feedback collection via web form
@@ -44,6 +44,7 @@ python app.py
   - Setting the `ADMIN_PASSWORD` environment variable, or
   - Modifying the `ADMIN_PASSWORD` variable in `app.py`
 - Change the `SECRET_KEY` in production for session security
+
 
 
 
