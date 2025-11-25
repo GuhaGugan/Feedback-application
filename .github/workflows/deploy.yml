@@ -1,0 +1,32 @@
+name: Deploy Feedback App
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Start SSH Agent
+      uses: webfactory/ssh-agent@v0.8.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to Lightsail Server
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: deployer
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd /home/deployer/Feedback-application
+          git pull
+          source venv/bin/activate
+          pip install -r requirements.txt
+          sudo systemctl restart feedback
